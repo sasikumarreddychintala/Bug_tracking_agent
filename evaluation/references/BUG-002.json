@@ -1,0 +1,19 @@
+{
+  "case_id": "BUG-002",
+  "category": "State Mutation",
+  "root_cause": {
+    "file": "src/cache_manager.py",
+    "lines": "6-8",
+    "description": "UserCache.get_default_roles returns mutable internal list reference instead of a defensive copy."
+  },
+  "mechanism": "UserService mutates the returned list reference in-place, modifying class-level cache state across all user requests.",
+  "acceptable_locations": [
+    "src/cache_manager.py",
+    "cache_manager.py"
+  ],
+  "regression_test": "test_cache_mutation",
+  "symptom_locations": [
+    "src/user_service.py",
+    "user_service.py"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "BUG-001",
+  "repo_path": "fixtures/bug001_quantity_zero",
+  "commit_sha": "c001a1",
+  "bug_description": "Checkout fails with ZeroDivisionError when quantity is zero. Adding a promo item with 0 quantity crashes cart processing.",
+  "stack_trace": "Traceback (most recent call last):\n  File \"src/cart.py\", line 10, in add_item\n    unit_price = calculate_unit_price(total_price, quantity)\n  File \"src/pricing.py\", line 4, in calculate_unit_price\n    return round(total_amount / quantity, 2)\nZeroDivisionError: division by zero",
+  "logs": "2026-08-29 10:14:02 ERROR [cart.py] Unhandled ZeroDivisionError in add_item for item 'Free Sample'",
+  "reproduction_command": "pytest fixtures/bug001_quantity_zero/tests/test_cart.py"
+}

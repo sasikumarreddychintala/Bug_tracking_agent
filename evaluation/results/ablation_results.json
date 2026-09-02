@@ -1,0 +1,57 @@
+[
+  {
+    "configuration": "Baseline V0 (Single-Shot LLM)",
+    "hypotheses_agent": "NO",
+    "code_search_tool": "NO",
+    "sandbox_reproduction": "NO",
+    "verification_agent": "NO",
+    "top1_root_cause_accuracy": "60.0%",
+    "symptom_trap_rate": "40.0%",
+    "mean_score_0_4": 2.2,
+    "avg_runtime_s": 0.45
+  },
+  {
+    "configuration": "RepoTrace (No Code Search)",
+    "hypotheses_agent": "YES",
+    "code_search_tool": "NO (File only)",
+    "sandbox_reproduction": "YES",
+    "verification_agent": "YES",
+    "top1_root_cause_accuracy": "70.0%",
+    "symptom_trap_rate": "30.0%",
+    "mean_score_0_4": 2.9,
+    "avg_runtime_s": 1.8
+  },
+  {
+    "configuration": "RepoTrace (No Hypotheses Agent)",
+    "hypotheses_agent": "NO (Single guess)",
+    "code_search_tool": "YES",
+    "sandbox_reproduction": "YES",
+    "verification_agent": "YES",
+    "top1_root_cause_accuracy": "80.0%",
+    "symptom_trap_rate": "20.0%",
+    "mean_score_0_4": 3.2,
+    "avg_runtime_s": 2.1
+  },
+  {
+    "configuration": "RepoTrace (No Verification Agent)",
+    "hypotheses_agent": "YES",
+    "code_search_tool": "YES",
+    "sandbox_reproduction": "YES",
+    "verification_agent": "NO (Unchecked)",
+    "top1_root_cause_accuracy": "70.0%",
+    "symptom_trap_rate": "30.0%",
+    "mean_score_0_4": 2.8,
+    "avg_runtime_s": 1.9
+  },
+  {
+    "configuration": "Full RepoTrace (All Agents + Tools)",
+    "hypotheses_agent": "YES",
+    "code_search_tool": "YES",
+    "sandbox_reproduction": "YES",
+    "verification_agent": "YES",
+    "top1_root_cause_accuracy": "100.0%",
+    "symptom_trap_rate": "0.0%",
+    "mean_score_0_4": 4.0,
+    "avg_runtime_s": 3.1
+  }
+]

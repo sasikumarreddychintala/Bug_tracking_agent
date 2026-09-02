@@ -1,0 +1,9 @@
+{
+  "case_id": "BUG-008",
+  "repo_path": "fixtures/bug008_transform_encoding",
+  "commit_sha": "c008a8",
+  "bug_description": "CSV parser crashes with UnicodeDecodeError when parsing files exported with UTF-8 BOM headers.",
+  "stack_trace": "Traceback (most recent call last):\n  File \"src/csv_parser.py\", line 4, in parse_csv_header\n    text = raw_bytes.decode(\"ascii\")\nUnicodeDecodeError: 'ascii' codec can't decode byte 0xef in position 0: ordinal not in range(128)",
+  "logs": "2026-08-29 10:22:15 ERROR [csv_parser.py] UnicodeDecodeError on header parse",
+  "reproduction_command": "pytest fixtures/bug008_transform_encoding/tests/test_csv.py"
+}

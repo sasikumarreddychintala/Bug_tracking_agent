@@ -1,0 +1,19 @@
+{
+  "case_id": "BUG-006",
+  "category": "Ordering Issue",
+  "root_cause": {
+    "file": "src/pipeline.py",
+    "lines": "4-6",
+    "description": "Pipeline steps list defines verify_signature before decompress step in reverse chronological order."
+  },
+  "mechanism": "Compressed payload is evaluated for plaintext signature token before decompression occurs.",
+  "acceptable_locations": [
+    "src/pipeline.py",
+    "pipeline.py"
+  ],
+  "regression_test": "test_pipeline_execution",
+  "symptom_locations": [
+    "src/pipeline.py",
+    "pipeline.py"
+  ]
+}

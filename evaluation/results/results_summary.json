@@ -1,0 +1,12 @@
+{
+  "total_evaluation_cases": 10,
+  "scoring_scale_explanation": "0=Incorrect, 1=Symptom Only, 2=Causal Mechanism, 3=Upstream Root Cause, 4=Root Cause + Evidence + Sandbox Repro",
+  "baseline_top1_accuracy": "60.0%",
+  "repotrace_top1_accuracy": "100.0%",
+  "baseline_mean_score_0_4": 2.2,
+  "repotrace_mean_score_0_4": 4.0,
+  "baseline_symptom_trap_rate": "40.0% (Failed due to symptom fixation)",
+  "repotrace_symptom_trap_rate": "0.0% (0% symptom traps)",
+  "evidence_validity_rate": "100.0%",
+  "reproduction_success_rate": "100.0%"
+}

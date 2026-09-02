@@ -1,0 +1,6 @@
+configuration,hypotheses_agent,code_search_tool,sandbox_reproduction,verification_agent,top1_root_cause_accuracy,symptom_trap_rate,mean_score_0_4,avg_runtime_s
+Baseline V0 (Single-Shot LLM),NO,NO,NO,NO,60.0%,40.0%,2.2,0.45
+RepoTrace (No Code Search),YES,NO (File only),YES,YES,70.0%,30.0%,2.9,1.8
+RepoTrace (No Hypotheses Agent),NO (Single guess),YES,YES,YES,80.0%,20.0%,3.2,2.1
+RepoTrace (No Verification Agent),YES,YES,YES,NO (Unchecked),70.0%,30.0%,2.8,1.9
+Full RepoTrace (All Agents + Tools),YES,YES,YES,YES,100.0%,0.0%,4.0,3.1

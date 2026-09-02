@@ -1,0 +1,19 @@
+{
+  "case_id": "BUG-003",
+  "category": "Conditional Boundary",
+  "root_cause": {
+    "file": "src/discount.py",
+    "lines": "3-5",
+    "description": "Boundary condition check in calculate_discount uses incorrect comparison operator."
+  },
+  "mechanism": "Invalid boundary check bypasses correct promotional tier branches.",
+  "acceptable_locations": [
+    "src/discount.py",
+    "discount.py"
+  ],
+  "regression_test": "test_tier_discounts",
+  "symptom_locations": [
+    "src/discount.py",
+    "discount.py"
+  ]
+}

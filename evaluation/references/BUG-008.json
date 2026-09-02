@@ -1,0 +1,19 @@
+{
+  "case_id": "BUG-008",
+  "category": "Data Transformation",
+  "root_cause": {
+    "file": "src/csv_parser.py",
+    "lines": "3-5",
+    "description": "csv_parser.parse_csv_header decodes input using strict ascii instead of utf-8 or utf-8-sig."
+  },
+  "mechanism": "Byte 0xef from BOM marker cannot be decoded under ASCII encoding, triggering UnicodeDecodeError.",
+  "acceptable_locations": [
+    "src/csv_parser.py",
+    "csv_parser.py"
+  ],
+  "regression_test": "test_utf8_bom_header",
+  "symptom_locations": [
+    "src/csv_parser.py",
+    "csv_parser.py"
+  ]
+}

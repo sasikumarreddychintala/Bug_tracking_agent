@@ -1,0 +1,9 @@
+{
+  "case_id": "BUG-007",
+  "repo_path": "fixtures/bug007_config_override",
+  "commit_sha": "c007a7",
+  "bug_description": "Server configuration ignores programmatic custom_port parameter due to faulty environment variable fallback precedence.",
+  "stack_trace": "Traceback (most recent call last):\n  File \"tests/test_config.py\", line 5, in test_custom_port_override\n    assert config.port == 9000\nAssertionError: assert 8080 == 9000",
+  "logs": "2026-08-29 10:21:05 WARN [config_loader.py] ServerConfig bound to port 8080",
+  "reproduction_command": "pytest fixtures/bug007_config_override/tests/test_config.py"
+}

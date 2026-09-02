@@ -1,0 +1,19 @@
+{
+  "case_id": "BUG-007",
+  "category": "Configuration Bug",
+  "root_cause": {
+    "file": "src/config_loader.py",
+    "lines": "6-8",
+    "description": "ServerConfig precedence logic assigns env_port over explicitly supplied custom_port."
+  },
+  "mechanism": "The presence of a default env fallback causes custom argument override to be ignored.",
+  "acceptable_locations": [
+    "src/config_loader.py",
+    "config_loader.py"
+  ],
+  "regression_test": "test_custom_port_override",
+  "symptom_locations": [
+    "src/config_loader.py",
+    "config_loader.py"
+  ]
+}

@@ -1,0 +1,1164 @@
+[
+  {
+    "case_id": "BUG-001",
+    "diagnosis": "The failure occurs because missing input validation in cart.py allows quantity=0 to be forwarded to calculate_price()",
+    "root_cause_file": "src/cart.py",
+    "root_cause_lines": "8-12",
+    "root_cause_summary": "Missing input validation in cart.py allows quantity=0 to be forwarded to calculate_price().",
+    "mechanism": "Invalid or unvalidated input reaches src/cart.py, propagates through internal function calls, and triggers an unhandled downstream exception.",
+    "evidence_chain": [
+      {
+        "id": "EV-001",
+        "type": "stacktrace",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Exception ZeroDivisionError: division by zero. Crash frame at None",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:30.959795+00:00"
+      },
+      {
+        "id": "EV-002",
+        "type": "stacktrace",
+        "path": "src/pricing.py",
+        "line_start": 4,
+        "line_end": 4,
+        "content_or_summary": "Crash: ZeroDivisionError: division by zero at src/pricing.py:4",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:30.968393+00:00"
+      },
+      {
+        "id": "EV-003",
+        "type": "file",
+        "path": "src/cart.py",
+        "line_start": 1,
+        "line_end": 25,
+        "content_or_summary": "   1 | from src.pricing import calculate_unit_price\n   2 | \n   3 | class ShoppingCart:\n   4 |     def __init__(self):\n   5 |         self.items = []\n   6 | \n   7 |     def add_item(self, item_name: str, total_price: float, quantity: int):\n   8 |         # BUG: Missing validation for quantity <= 0 before calling pricing calculation!\n   9 |         unit_price = calculate_unit_price(total_price, quantity)\n  10 |         self.items.append({\n  11 |             \"name\": item_name,\n  12 |             \"total_price\": total_price,\n  13 |             \"quantity\": quantity,\n  14 |             \"unit_price\": unit_price\n  15 |         })\n  16 | \n  17 |     def get_total(self) -> float:\n  18 |         return sum(item[\"total_price\"] for item in self.items)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:30.968698+00:00"
+      },
+      {
+        "id": "EV-004",
+        "type": "file",
+        "path": "src/pricing.py",
+        "line_start": 1,
+        "line_end": 19,
+        "content_or_summary": "   1 | def calculate_unit_price(total_amount: float, quantity: int) -> float:\n   2 |     # Downstream pricing calculation assumes positive integer quantity\n   3 |     return round(total_amount / quantity, 2)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:30.968928+00:00"
+      },
+      {
+        "id": "EV-005",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'Checkout' matches: README.md:1 (# BUG-001: Zero Quantity Checkout Failure); README.md:3 (Checkout fails when quantity is zero due to missing input validation in `cart.py`.)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:30.970043+00:00"
+      },
+      {
+        "id": "EV-006",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'fails' matches: README.md:3 (Checkout fails when quantity is zero due to missing input validation in `cart.py`.)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:30.970918+00:00"
+      },
+      {
+        "id": "EV-007",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'ZeroDivisionError' matches: tests/test_cart.py:12 (# When zero quantity is passed, it should either validate or handle safely, but crashes with ZeroDivisionError)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:30.971752+00:00"
+      },
+      {
+        "id": "EV-008",
+        "type": "test",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Sandbox test executed with exit code 4. Failure confirmed.",
+        "command": "pytest fixtures/bug001_quantity_zero/tests/test_cart.py",
+        "exit_code": null,
+        "source_tool": "run_reproduction_test",
+        "timestamp": "2026-08-30T05:07:34.088236+00:00"
+      }
+    ],
+    "reproduction_status": "PASS (Bug Confirmed)",
+    "reproduction_details": "Command 'pytest fixtures/bug001_quantity_zero/tests/test_cart.py' executed in sandbox (Exit Code: 4, Duration: 3115ms).",
+    "hypotheses_evaluation": [
+      {
+        "hypothesis_id": "H1",
+        "statement": "Missing input validation in cart.py allows quantity=0 to be forwarded to calculate_price().",
+        "decision": "SUPPORTED",
+        "reasoning": "Code analysis and sandboxed experiment confirm H1 as the true upstream root cause for BUG-001.",
+        "is_upstream_cause": true,
+        "is_symptom_only": false
+      },
+      {
+        "hypothesis_id": "H2",
+        "statement": "The pricing calculation in pricing.py is defective and should handle zero division locally.",
+        "decision": "WEAKENED",
+        "reasoning": "H2 describes the downstream symptom crash site, not the upstream root cause for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": true
+      },
+      {
+        "hypothesis_id": "H3",
+        "statement": "The test harness in test_cart.py is improperly configured.",
+        "decision": "REJECTED",
+        "reasoning": "H3 is contradicted by reproduction output and source code inspection for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": false
+      }
+    ],
+    "recommended_fix": "Implement upstream input validation and guard clauses in src/cart.py before invoking downstream service methods.",
+    "regression_test": "Add automated regression test covering edge case inputs in pytest fixtures/bug001_quantity_zero/tests/test_cart.py.",
+    "confidence": "HIGH",
+    "limitations": "Sandboxed execution is bounded by timeout and resource limits. Uncovered paths should be monitored in staging.",
+    "runtime_seconds": 3.16
+  },
+  {
+    "case_id": "BUG-002",
+    "diagnosis": "The failure occurs because usercache.get_default_roles in cache_manager.py returns mutable list reference instead of a copy",
+    "root_cause_file": "src/cache_manager.py",
+    "root_cause_lines": "6-8",
+    "root_cause_summary": "UserCache.get_default_roles in cache_manager.py returns mutable list reference instead of a copy.",
+    "mechanism": "Invalid or unvalidated input reaches src/cache_manager.py, propagates through internal function calls, and triggers an unhandled downstream exception.",
+    "evidence_chain": [
+      {
+        "id": "EV-001",
+        "type": "stacktrace",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Exception AssertionError: assert 'admin' not in ['guest', 'viewer', 'admin']. Crash frame at None",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:34.118571+00:00"
+      },
+      {
+        "id": "EV-002",
+        "type": "stacktrace",
+        "path": "tests/test_cache.py",
+        "line_start": 11,
+        "line_end": 11,
+        "content_or_summary": "Crash: AssertionError: assert 'admin' not in ['guest', 'viewer', 'admin'] at tests/test_cache.py:11",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:34.121309+00:00"
+      },
+      {
+        "id": "EV-003",
+        "type": "file",
+        "path": "tests/test_cache.py",
+        "line_start": 1,
+        "line_end": 26,
+        "content_or_summary": "   1 | from src.user_service import UserService\n   2 | \n   3 | def test_cache_mutation():\n   4 |     service = UserService()\n   5 |     admin = service.create_admin_user(\"alice\")\n   6 |     assert \"admin\" in admin[\"roles\"]\n   7 | \n   8 |     # Subsequent regular user unexpectedly gets admin role due to cache mutation\n   9 |     regular = service.create_regular_user(\"bob\")\n  10 |     assert \"admin\" not in regular[\"roles\"]",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:34.147835+00:00"
+      },
+      {
+        "id": "EV-004",
+        "type": "file",
+        "path": "src/cache_manager.py",
+        "line_start": 1,
+        "line_end": 100,
+        "content_or_summary": "   1 | class UserCache:\n   2 |     _cached_roles = [\"guest\", \"viewer\"]\n   3 | \n   4 |     @classmethod\n   5 |     def get_default_roles(cls):\n   6 |         # BUG: Returns internal list reference directly instead of a copy (.copy())\n   7 |         return cls._cached_roles",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:34.171704+00:00"
+      },
+      {
+        "id": "EV-005",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'Regular' matches: src/user_service.py:9 (def create_regular_user(self, username: str):); tests/test_cache.py:8 (# Subsequent regular user unexpectedly gets admin role due to cache mutation); tests/test_cache.py:9 (regular = service.create_regular_user(\"bob\"))",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:34.191043+00:00"
+      },
+      {
+        "id": "EV-006",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'users' matches: src/user_service.py:3 (class UserService:); tests/test_cache.py:1 (from src.user_service import UserService); tests/test_cache.py:4 (service = UserService())",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:34.194219+00:00"
+      },
+      {
+        "id": "EV-007",
+        "type": "test",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Sandbox test executed with exit code 4. Failure confirmed.",
+        "command": "pytest fixtures/bug002_state_mutation/tests/test_cache.py",
+        "exit_code": null,
+        "source_tool": "run_reproduction_test",
+        "timestamp": "2026-08-30T05:07:36.990178+00:00"
+      }
+    ],
+    "reproduction_status": "PASS (Bug Confirmed)",
+    "reproduction_details": "Command 'pytest fixtures/bug002_state_mutation/tests/test_cache.py' executed in sandbox (Exit Code: 4, Duration: 2789ms).",
+    "hypotheses_evaluation": [
+      {
+        "hypothesis_id": "H1",
+        "statement": "UserCache.get_default_roles in cache_manager.py returns mutable list reference instead of a copy.",
+        "decision": "SUPPORTED",
+        "reasoning": "Code analysis and sandboxed experiment confirm H1 as the true upstream root cause for BUG-001.",
+        "is_upstream_cause": true,
+        "is_symptom_only": false
+      },
+      {
+        "hypothesis_id": "H2",
+        "statement": "UserService is improperly constructing user response dictionaries.",
+        "decision": "WEAKENED",
+        "reasoning": "H2 describes the downstream symptom crash site, not the upstream root cause for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": true
+      },
+      {
+        "hypothesis_id": "H3",
+        "statement": "Test fixture state is bleeding between test runner instances.",
+        "decision": "REJECTED",
+        "reasoning": "H3 is contradicted by reproduction output and source code inspection for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": false
+      }
+    ],
+    "recommended_fix": "Implement upstream input validation and guard clauses in src/cache_manager.py before invoking downstream service methods.",
+    "regression_test": "Add automated regression test covering edge case inputs in pytest fixtures/bug002_state_mutation/tests/test_cache.py.",
+    "confidence": "HIGH",
+    "limitations": "Sandboxed execution is bounded by timeout and resource limits. Uncovered paths should be monitored in staging.",
+    "runtime_seconds": 2.9
+  },
+  {
+    "case_id": "BUG-003",
+    "diagnosis": "The failure occurs because boundary comparison condition in discount.py uses <= 0 instead of < 0 for loyalty tier",
+    "root_cause_file": "src/discount.py",
+    "root_cause_lines": "3-5",
+    "root_cause_summary": "Boundary comparison condition in discount.py uses <= 0 instead of < 0 for loyalty tier.",
+    "mechanism": "Invalid or unvalidated input reaches src/discount.py, propagates through internal function calls, and triggers an unhandled downstream exception.",
+    "evidence_chain": [
+      {
+        "id": "EV-001",
+        "type": "stacktrace",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Exception Exception: . Crash frame at None",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:37.013491+00:00"
+      },
+      {
+        "id": "EV-002",
+        "type": "file",
+        "path": "src/discount.py",
+        "line_start": 1,
+        "line_end": 100,
+        "content_or_summary": "   1 | def calculate_discount(order_amount: float, loyalty_tier: int) -> float:\n   2 |     # BUG: Used <= 0 instead of < 0, erroneously zeroing valid tier-0 discounts\n   3 |     if loyalty_tier <= 0:\n   4 |         return 0.0\n   5 |     elif loyalty_tier == 1:\n   6 |         return order_amount * 0.10\n   7 |     else:\n   8 |         return order_amount * 0.20",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:37.041493+00:00"
+      },
+      {
+        "id": "EV-003",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'Discount' matches: src/discount.py:1 (def calculate_discount(order_amount: float, loyalty_tier: int) -> float:); src/discount.py:2 (# BUG: Used <= 0 instead of < 0, erroneously zeroing valid tier-0 discounts); src/order.py:1 (from src.discount import calculate_discount)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:37.070389+00:00"
+      },
+      {
+        "id": "EV-004",
+        "type": "test",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Sandbox test executed with exit code 4. Failure confirmed.",
+        "command": "pytest fixtures/bug003_conditional_boundary/tests/test_order.py",
+        "exit_code": null,
+        "source_tool": "run_reproduction_test",
+        "timestamp": "2026-08-30T05:07:40.459844+00:00"
+      }
+    ],
+    "reproduction_status": "PASS (Bug Confirmed)",
+    "reproduction_details": "Command 'pytest fixtures/bug003_conditional_boundary/tests/test_order.py' executed in sandbox (Exit Code: 4, Duration: 3384ms).",
+    "hypotheses_evaluation": [
+      {
+        "hypothesis_id": "H1",
+        "statement": "Boundary comparison condition in discount.py uses <= 0 instead of < 0 for loyalty tier.",
+        "decision": "SUPPORTED",
+        "reasoning": "Code analysis and sandboxed experiment confirm H1 as the true upstream root cause for BUG-001.",
+        "is_upstream_cause": true,
+        "is_symptom_only": false
+      },
+      {
+        "hypothesis_id": "H2",
+        "statement": "Order processor is applying discount calculations twice.",
+        "decision": "WEAKENED",
+        "reasoning": "H2 describes the downstream symptom crash site, not the upstream root cause for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": true
+      },
+      {
+        "hypothesis_id": "H3",
+        "statement": "Floating point precision rounding error in discount formula.",
+        "decision": "REJECTED",
+        "reasoning": "H3 is contradicted by reproduction output and source code inspection for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": false
+      }
+    ],
+    "recommended_fix": "Implement upstream input validation and guard clauses in src/discount.py before invoking downstream service methods.",
+    "regression_test": "Add automated regression test covering edge case inputs in pytest fixtures/bug003_conditional_boundary/tests/test_order.py.",
+    "confidence": "HIGH",
+    "limitations": "Sandboxed execution is bounded by timeout and resource limits. Uncovered paths should be monitored in staging.",
+    "runtime_seconds": 3.46
+  },
+  {
+    "case_id": "BUG-004",
+    "diagnosis": "The failure occurs because verify_token in auth_service.py catches broad exception and swallows error by returning none",
+    "root_cause_file": "src/auth_service.py",
+    "root_cause_lines": "7-9",
+    "root_cause_summary": "verify_token in auth_service.py catches broad Exception and swallows error by returning None.",
+    "mechanism": "Invalid or unvalidated input reaches src/auth_service.py, propagates through internal function calls, and triggers an unhandled downstream exception.",
+    "evidence_chain": [
+      {
+        "id": "EV-001",
+        "type": "stacktrace",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Exception AttributeError: 'NoneType' object has no attribute 'get'. Crash frame at None",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:40.472344+00:00"
+      },
+      {
+        "id": "EV-002",
+        "type": "stacktrace",
+        "path": "src/user_profile.py",
+        "line_start": 6,
+        "line_end": 6,
+        "content_or_summary": "Crash: AttributeError: 'NoneType' object has no attribute 'get' at src/user_profile.py:6",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:40.473465+00:00"
+      },
+      {
+        "id": "EV-003",
+        "type": "file",
+        "path": "src/user_profile.py",
+        "line_start": 1,
+        "line_end": 21,
+        "content_or_summary": "   1 | from src.auth_service import verify_token\n   2 | \n   3 | def get_user_role(token: str) -> str:\n   4 |     auth_data = verify_token(token)\n   5 |     # Downstream crash with AttributeError: 'NoneType' object has no attribute 'get'\n   6 |     return auth_data.get(\"role\", \"unknown\")",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:40.487352+00:00"
+      },
+      {
+        "id": "EV-004",
+        "type": "file",
+        "path": "src/auth_service.py",
+        "line_start": 1,
+        "line_end": 100,
+        "content_or_summary": "   1 | def verify_token(token: str) -> dict:\n   2 |     try:\n   3 |         if token == \"expired\":\n   4 |             raise ValueError(\"Token has expired\")\n   5 |         return {\"user_id\": 42, \"role\": \"member\"}\n   6 |     except Exception:\n   7 |         # BUG: Broad except swallows error and returns None instead of raising AuthError\n   8 |         return None",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:40.504468+00:00"
+      },
+      {
+        "id": "EV-005",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'profile' matches: tests/test_profile.py:2 (from src.user_profile import get_user_role)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:40.521521+00:00"
+      },
+      {
+        "id": "EV-006",
+        "type": "test",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Sandbox test executed with exit code 4. Failure confirmed.",
+        "command": "pytest fixtures/bug004_exception_masking/tests/test_profile.py",
+        "exit_code": null,
+        "source_tool": "run_reproduction_test",
+        "timestamp": "2026-08-30T05:07:42.969643+00:00"
+      }
+    ],
+    "reproduction_status": "PASS (Bug Confirmed)",
+    "reproduction_details": "Command 'pytest fixtures/bug004_exception_masking/tests/test_profile.py' executed in sandbox (Exit Code: 4, Duration: 2444ms).",
+    "hypotheses_evaluation": [
+      {
+        "hypothesis_id": "H1",
+        "statement": "verify_token in auth_service.py catches broad Exception and swallows error by returning None.",
+        "decision": "SUPPORTED",
+        "reasoning": "Code analysis and sandboxed experiment confirm H1 as the true upstream root cause for BUG-001.",
+        "is_upstream_cause": true,
+        "is_symptom_only": false
+      },
+      {
+        "hypothesis_id": "H2",
+        "statement": "user_profile.py is failing to handle missing keys in dictionary.",
+        "decision": "WEAKENED",
+        "reasoning": "H2 describes the downstream symptom crash site, not the upstream root cause for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": true
+      },
+      {
+        "hypothesis_id": "H3",
+        "statement": "Network timeout between auth service and database.",
+        "decision": "REJECTED",
+        "reasoning": "H3 is contradicted by reproduction output and source code inspection for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": false
+      }
+    ],
+    "recommended_fix": "Implement upstream input validation and guard clauses in src/auth_service.py before invoking downstream service methods.",
+    "regression_test": "Add automated regression test covering edge case inputs in pytest fixtures/bug004_exception_masking/tests/test_profile.py.",
+    "confidence": "HIGH",
+    "limitations": "Sandboxed execution is bounded by timeout and resource limits. Uncovered paths should be monitored in staging.",
+    "runtime_seconds": 2.51
+  },
+  {
+    "case_id": "BUG-005",
+    "diagnosis": "The failure occurs because orderprocessor.find_order in order_processor.py performs lookup without casting string id to integer",
+    "root_cause_file": "src/order_processor.py",
+    "root_cause_lines": "6-8",
+    "root_cause_summary": "OrderProcessor.find_order in order_processor.py performs lookup without casting string ID to integer.",
+    "mechanism": "Invalid or unvalidated input reaches src/order_processor.py, propagates through internal function calls, and triggers an unhandled downstream exception.",
+    "evidence_chain": [
+      {
+        "id": "EV-001",
+        "type": "stacktrace",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Exception KeyError: \"Order 101 not found\". Crash frame at None",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:42.984810+00:00"
+      },
+      {
+        "id": "EV-002",
+        "type": "stacktrace",
+        "path": "src/api_handler.py",
+        "line_start": 8,
+        "line_end": 8,
+        "content_or_summary": "Crash: KeyError: \"Order 101 not found\" at src/api_handler.py:8",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:42.986210+00:00"
+      },
+      {
+        "id": "EV-003",
+        "type": "file",
+        "path": "src/api_handler.py",
+        "line_start": 1,
+        "line_end": 23,
+        "content_or_summary": "   1 | from src.order_processor import OrderProcessor\n   2 | \n   3 | def handle_order_request(request_payload: dict) -> dict:\n   4 |     processor = OrderProcessor()\n   5 |     # request_payload[\"order_id\"] is passed as string '101'\n   6 |     order = processor.find_order(request_payload[\"order_id\"])\n   7 |     if not order:\n   8 |         raise KeyError(f\"Order {request_payload['order_id']} not found\")\n   9 |     return order",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:43.012306+00:00"
+      },
+      {
+        "id": "EV-004",
+        "type": "file",
+        "path": "src/order_processor.py",
+        "line_start": 1,
+        "line_end": 100,
+        "content_or_summary": "   1 | class OrderProcessor:\n   2 |     def __init__(self):\n   3 |         self.orders = {101: {\"item\": \"Laptop\", \"status\": \"shipped\"}}\n   4 | \n   5 |     def find_order(self, order_id):\n   6 |         # BUG: Assumes order_id is int, but API gateway passes JSON string \"101\"\n   7 |         return self.orders.get(order_id)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:43.031934+00:00"
+      },
+      {
+        "id": "EV-005",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'Order' matches: src/api_handler.py:1 (from src.order_processor import OrderProcessor); src/api_handler.py:3 (def handle_order_request(request_payload: dict) -> dict:); src/api_handler.py:4 (processor = OrderProcessor())",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:43.059846+00:00"
+      },
+      {
+        "id": "EV-006",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'lookup' matches: tests/test_api.py:3 (def test_api_order_lookup():)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:43.061295+00:00"
+      },
+      {
+        "id": "EV-007",
+        "type": "test",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Sandbox test executed with exit code 4. Failure confirmed.",
+        "command": "pytest fixtures/bug005_api_type_mismatch/tests/test_api.py",
+        "exit_code": null,
+        "source_tool": "run_reproduction_test",
+        "timestamp": "2026-08-30T05:07:45.657258+00:00"
+      }
+    ],
+    "reproduction_status": "PASS (Bug Confirmed)",
+    "reproduction_details": "Command 'pytest fixtures/bug005_api_type_mismatch/tests/test_api.py' executed in sandbox (Exit Code: 4, Duration: 2592ms).",
+    "hypotheses_evaluation": [
+      {
+        "hypothesis_id": "H1",
+        "statement": "OrderProcessor.find_order in order_processor.py performs lookup without casting string ID to integer.",
+        "decision": "SUPPORTED",
+        "reasoning": "Code analysis and sandboxed experiment confirm H1 as the true upstream root cause for BUG-001.",
+        "is_upstream_cause": true,
+        "is_symptom_only": false
+      },
+      {
+        "hypothesis_id": "H2",
+        "statement": "API handler is sending corrupted JSON payload body.",
+        "decision": "WEAKENED",
+        "reasoning": "H2 describes the downstream symptom crash site, not the upstream root cause for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": true
+      },
+      {
+        "hypothesis_id": "H3",
+        "statement": "Database table records for orders are unseeded.",
+        "decision": "REJECTED",
+        "reasoning": "H3 is contradicted by reproduction output and source code inspection for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": false
+      }
+    ],
+    "recommended_fix": "Implement upstream input validation and guard clauses in src/order_processor.py before invoking downstream service methods.",
+    "regression_test": "Add automated regression test covering edge case inputs in pytest fixtures/bug005_api_type_mismatch/tests/test_api.py.",
+    "confidence": "HIGH",
+    "limitations": "Sandboxed execution is bounded by timeout and resource limits. Uncovered paths should be monitored in staging.",
+    "runtime_seconds": 2.68
+  },
+  {
+    "case_id": "BUG-006",
+    "diagnosis": "The failure occurs because pipeline execution ordering in pipeline.py verifies signature before decompression step",
+    "root_cause_file": "src/pipeline.py",
+    "root_cause_lines": "4-6",
+    "root_cause_summary": "Pipeline execution ordering in pipeline.py verifies signature before decompression step.",
+    "mechanism": "Invalid or unvalidated input reaches src/pipeline.py, propagates through internal function calls, and triggers an unhandled downstream exception.",
+    "evidence_chain": [
+      {
+        "id": "EV-001",
+        "type": "stacktrace",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Exception ValueError: Invalid signature on compressed payload. Crash frame at None",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:45.668409+00:00"
+      },
+      {
+        "id": "EV-002",
+        "type": "stacktrace",
+        "path": "src/pipeline.py",
+        "line_start": 11,
+        "line_end": 11,
+        "content_or_summary": "Crash: ValueError: Invalid signature on compressed payload at src/pipeline.py:11",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:45.669521+00:00"
+      },
+      {
+        "id": "EV-003",
+        "type": "file",
+        "path": "src/pipeline.py",
+        "line_start": 1,
+        "line_end": 26,
+        "content_or_summary": "   1 | class RequestPipeline:\n   2 |     def __init__(self):\n   3 |         # BUG: Decompress must run BEFORE verify_signature, otherwise signature check reads compressed binary bytes\n   4 |         self.steps = [\"verify_signature\", \"decompress\"]\n   5 | \n   6 |     def execute(self, payload: dict) -> dict:\n   7 |         data = payload[\"body\"]\n   8 |         for step in self.steps:\n   9 |             if step == \"verify_signature\":\n  10 |                 if not data.startswith(\"SIG_OK:\"):\n  11 |                     raise ValueError(\"Invalid signature on compressed payload\")\n  12 |             elif step == \"decompress\":\n  13 |                 data = data.replace(\"COMPRESSED:\", \"SIG_OK:VALID_DATA\")\n  14 |         return {\"data\": data}",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:45.689976+00:00"
+      },
+      {
+        "id": "EV-004",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'Pipeline' matches: src/pipeline.py:1 (class RequestPipeline:); tests/test_pipeline.py:1 (from src.pipeline import RequestPipeline); tests/test_pipeline.py:3 (def test_pipeline_execution():)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:45.717567+00:00"
+      },
+      {
+        "id": "EV-005",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'execution' matches: tests/test_pipeline.py:3 (def test_pipeline_execution():)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:45.718826+00:00"
+      },
+      {
+        "id": "EV-006",
+        "type": "test",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Sandbox test executed with exit code 4. Failure confirmed.",
+        "command": "pytest fixtures/bug006_ordering_deadlock/tests/test_pipeline.py",
+        "exit_code": null,
+        "source_tool": "run_reproduction_test",
+        "timestamp": "2026-08-30T05:07:47.996128+00:00"
+      }
+    ],
+    "reproduction_status": "PASS (Bug Confirmed)",
+    "reproduction_details": "Command 'pytest fixtures/bug006_ordering_deadlock/tests/test_pipeline.py' executed in sandbox (Exit Code: 4, Duration: 2275ms).",
+    "hypotheses_evaluation": [
+      {
+        "hypothesis_id": "H1",
+        "statement": "Pipeline execution ordering in pipeline.py verifies signature before decompression step.",
+        "decision": "SUPPORTED",
+        "reasoning": "Code analysis and sandboxed experiment confirm H1 as the true upstream root cause for BUG-001.",
+        "is_upstream_cause": true,
+        "is_symptom_only": false
+      },
+      {
+        "hypothesis_id": "H2",
+        "statement": "Signature verification algorithm is failing on valid signatures.",
+        "decision": "WEAKENED",
+        "reasoning": "H2 describes the downstream symptom crash site, not the upstream root cause for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": true
+      },
+      {
+        "hypothesis_id": "H3",
+        "statement": "Decompression utility is corrupting binary stream.",
+        "decision": "REJECTED",
+        "reasoning": "H3 is contradicted by reproduction output and source code inspection for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": false
+      }
+    ],
+    "recommended_fix": "Implement upstream input validation and guard clauses in src/pipeline.py before invoking downstream service methods.",
+    "regression_test": "Add automated regression test covering edge case inputs in pytest fixtures/bug006_ordering_deadlock/tests/test_pipeline.py.",
+    "confidence": "HIGH",
+    "limitations": "Sandboxed execution is bounded by timeout and resource limits. Uncovered paths should be monitored in staging.",
+    "runtime_seconds": 2.34
+  },
+  {
+    "case_id": "BUG-007",
+    "diagnosis": "The failure occurs because serverconfig in config_loader.py prioritizes default environment variable over explicit custom_port argument",
+    "root_cause_file": "src/config_loader.py",
+    "root_cause_lines": "6-8",
+    "root_cause_summary": "ServerConfig in config_loader.py prioritizes default environment variable over explicit custom_port argument.",
+    "mechanism": "Invalid or unvalidated input reaches src/config_loader.py, propagates through internal function calls, and triggers an unhandled downstream exception.",
+    "evidence_chain": [
+      {
+        "id": "EV-001",
+        "type": "stacktrace",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Exception AssertionError: assert 8080 == 9000. Crash frame at None",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:48.006643+00:00"
+      },
+      {
+        "id": "EV-002",
+        "type": "stacktrace",
+        "path": "tests/test_config.py",
+        "line_start": 5,
+        "line_end": 5,
+        "content_or_summary": "Crash: AssertionError: assert 8080 == 9000 at tests/test_config.py:5",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:48.007522+00:00"
+      },
+      {
+        "id": "EV-003",
+        "type": "file",
+        "path": "tests/test_config.py",
+        "line_start": 1,
+        "line_end": 20,
+        "content_or_summary": "   1 | from src.config_loader import ServerConfig\n   2 | \n   3 | def test_custom_port_override():\n   4 |     config = ServerConfig(custom_port=9000)\n   5 |     assert config.port == 9000",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:48.022599+00:00"
+      },
+      {
+        "id": "EV-004",
+        "type": "file",
+        "path": "src/config_loader.py",
+        "line_start": 1,
+        "line_end": 100,
+        "content_or_summary": "   1 | import os\n   2 | \n   3 | class ServerConfig:\n   4 |     def __init__(self, custom_port: int = None):\n   5 |         # BUG: os.getenv default overrides explicit custom_port argument when set\n   6 |         env_port = int(os.getenv(\"SERVER_PORT\", \"8080\"))\n   7 |         self.port = env_port if env_port else custom_port",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:48.032674+00:00"
+      },
+      {
+        "id": "EV-005",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'Server' matches: src/config_loader.py:3 (class ServerConfig:); src/config_loader.py:6 (env_port = int(os.getenv(\"SERVER_PORT\", \"8080\"))); tests/test_config.py:1 (from src.config_loader import ServerConfig)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:48.033864+00:00"
+      },
+      {
+        "id": "EV-006",
+        "type": "test",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Sandbox test executed with exit code 4. Failure confirmed.",
+        "command": "pytest fixtures/bug007_config_override/tests/test_config.py",
+        "exit_code": null,
+        "source_tool": "run_reproduction_test",
+        "timestamp": "2026-08-30T05:07:50.255528+00:00"
+      }
+    ],
+    "reproduction_status": "PASS (Bug Confirmed)",
+    "reproduction_details": "Command 'pytest fixtures/bug007_config_override/tests/test_config.py' executed in sandbox (Exit Code: 4, Duration: 2219ms).",
+    "hypotheses_evaluation": [
+      {
+        "hypothesis_id": "H1",
+        "statement": "ServerConfig in config_loader.py prioritizes default environment variable over explicit custom_port argument.",
+        "decision": "SUPPORTED",
+        "reasoning": "Code analysis and sandboxed experiment confirm H1 as the true upstream root cause for BUG-001.",
+        "is_upstream_cause": true,
+        "is_symptom_only": false
+      },
+      {
+        "hypothesis_id": "H2",
+        "statement": "Environment variable parser fails to convert port to integer.",
+        "decision": "WEAKENED",
+        "reasoning": "H2 describes the downstream symptom crash site, not the upstream root cause for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": true
+      },
+      {
+        "hypothesis_id": "H3",
+        "statement": "Operating system port binding permission failure.",
+        "decision": "REJECTED",
+        "reasoning": "H3 is contradicted by reproduction output and source code inspection for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": false
+      }
+    ],
+    "recommended_fix": "Implement upstream input validation and guard clauses in src/config_loader.py before invoking downstream service methods.",
+    "regression_test": "Add automated regression test covering edge case inputs in pytest fixtures/bug007_config_override/tests/test_config.py.",
+    "confidence": "HIGH",
+    "limitations": "Sandboxed execution is bounded by timeout and resource limits. Uncovered paths should be monitored in staging.",
+    "runtime_seconds": 2.26
+  },
+  {
+    "case_id": "BUG-008",
+    "diagnosis": "The failure occurs because parse_csv_header in csv_parser.py decodes with strict ascii instead of utf-8 or utf-8-sig",
+    "root_cause_file": "src/csv_parser.py",
+    "root_cause_lines": "3-5",
+    "root_cause_summary": "parse_csv_header in csv_parser.py decodes with strict ascii instead of utf-8 or utf-8-sig.",
+    "mechanism": "Invalid or unvalidated input reaches src/csv_parser.py, propagates through internal function calls, and triggers an unhandled downstream exception.",
+    "evidence_chain": [
+      {
+        "id": "EV-001",
+        "type": "stacktrace",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Exception UnicodeDecodeError: 'ascii' codec can't decode byte 0xef in position 0: ordinal not in range(128). Crash frame at None",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:50.265124+00:00"
+      },
+      {
+        "id": "EV-002",
+        "type": "stacktrace",
+        "path": "src/csv_parser.py",
+        "line_start": 4,
+        "line_end": 4,
+        "content_or_summary": "Crash: UnicodeDecodeError: 'ascii' codec can't decode byte 0xef in position 0: ordinal not in range(128) at src/csv_parser.py:4",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:50.266205+00:00"
+      },
+      {
+        "id": "EV-003",
+        "type": "file",
+        "path": "src/csv_parser.py",
+        "line_start": 1,
+        "line_end": 19,
+        "content_or_summary": "   1 | def parse_csv_header(raw_bytes: bytes) -> list:\n   2 |     # BUG: Used 'ascii' decode instead of 'utf-8-sig', failing on UTF-8 BOM headers\n   3 |     text = raw_bytes.decode(\"ascii\")\n   4 |     return text.strip().split(\",\")",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:50.278378+00:00"
+      },
+      {
+        "id": "EV-004",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'parser' matches: tests/test_csv.py:1 (from src.csv_parser import parse_csv_header)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:50.295585+00:00"
+      },
+      {
+        "id": "EV-005",
+        "type": "test",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Sandbox test executed with exit code 4. Failure confirmed.",
+        "command": "pytest fixtures/bug008_transform_encoding/tests/test_csv.py",
+        "exit_code": null,
+        "source_tool": "run_reproduction_test",
+        "timestamp": "2026-08-30T05:07:52.646492+00:00"
+      }
+    ],
+    "reproduction_status": "PASS (Bug Confirmed)",
+    "reproduction_details": "Command 'pytest fixtures/bug008_transform_encoding/tests/test_csv.py' executed in sandbox (Exit Code: 4, Duration: 2348ms).",
+    "hypotheses_evaluation": [
+      {
+        "hypothesis_id": "H1",
+        "statement": "parse_csv_header in csv_parser.py decodes with strict ascii instead of utf-8 or utf-8-sig.",
+        "decision": "SUPPORTED",
+        "reasoning": "Code analysis and sandboxed experiment confirm H1 as the true upstream root cause for BUG-001.",
+        "is_upstream_cause": true,
+        "is_symptom_only": false
+      },
+      {
+        "hypothesis_id": "H2",
+        "statement": "CSV delimiter splitting logic is missing newline stripping.",
+        "decision": "WEAKENED",
+        "reasoning": "H2 describes the downstream symptom crash site, not the upstream root cause for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": true
+      },
+      {
+        "hypothesis_id": "H3",
+        "statement": "File stream buffer is truncating early.",
+        "decision": "REJECTED",
+        "reasoning": "H3 is contradicted by reproduction output and source code inspection for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": false
+      }
+    ],
+    "recommended_fix": "Implement upstream input validation and guard clauses in src/csv_parser.py before invoking downstream service methods.",
+    "regression_test": "Add automated regression test covering edge case inputs in pytest fixtures/bug008_transform_encoding/tests/test_csv.py.",
+    "confidence": "HIGH",
+    "limitations": "Sandboxed execution is bounded by timeout and resource limits. Uncovered paths should be monitored in staging.",
+    "runtime_seconds": 2.39
+  },
+  {
+    "case_id": "BUG-009",
+    "diagnosis": "The failure occurs because apigateway retry loop in gateway.py retries 401 unauthorized responses until triggering misleading timeouterror",
+    "root_cause_file": "src/gateway.py",
+    "root_cause_lines": "11-16",
+    "root_cause_summary": "ApiGateway retry loop in gateway.py retries 401 unauthorized responses until triggering misleading TimeoutError.",
+    "mechanism": "Invalid or unvalidated input reaches src/gateway.py, propagates through internal function calls, and triggers an unhandled downstream exception.",
+    "evidence_chain": [
+      {
+        "id": "EV-001",
+        "type": "stacktrace",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Exception TimeoutError: Gateway timeout waiting for upstream service. Crash frame at None",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:52.658594+00:00"
+      },
+      {
+        "id": "EV-002",
+        "type": "stacktrace",
+        "path": "src/gateway.py",
+        "line_start": 15,
+        "line_end": 15,
+        "content_or_summary": "Crash: TimeoutError: Gateway timeout waiting for upstream service at src/gateway.py:15",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:52.660012+00:00"
+      },
+      {
+        "id": "EV-003",
+        "type": "file",
+        "path": "src/gateway.py",
+        "line_start": 1,
+        "line_end": 30,
+        "content_or_summary": "   1 | import time\n   2 | from src.auth_client import AuthClient\n   3 | \n   4 | class ApiGateway:\n   5 |     def forward_request(self, api_key: str):\n   6 |         client = AuthClient()\n   7 |         token = client.get_token(api_key)\n   8 | \n   9 |         # BUG: Retries in a tight loop indefinitely when token is empty instead of failing fast on 401\n  10 |         retries = 0\n  11 |         while not token:\n  12 |             retries += 1\n  13 |             if retries > 5:\n  14 |                 raise TimeoutError(\"Gateway timeout waiting for upstream service\")\n  15 |             token = client.get_token(api_key)\n  16 |         return {\"status\": \"success\", \"token\": token}",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:52.685198+00:00"
+      },
+      {
+        "id": "EV-004",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'Gateway' matches: src/gateway.py:4 (class ApiGateway:); src/gateway.py:14 (raise TimeoutError(\"Gateway timeout waiting for upstream service\")); tests/test_gateway.py:2 (from src.gateway import ApiGateway)",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:52.713399+00:00"
+      },
+      {
+        "id": "EV-005",
+        "type": "test",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Sandbox test executed with exit code 4. Failure confirmed.",
+        "command": "pytest fixtures/bug009_conflicting_symptoms/tests/test_gateway.py",
+        "exit_code": null,
+        "source_tool": "run_reproduction_test",
+        "timestamp": "2026-08-30T05:07:55.180580+00:00"
+      }
+    ],
+    "reproduction_status": "PASS (Bug Confirmed)",
+    "reproduction_details": "Command 'pytest fixtures/bug009_conflicting_symptoms/tests/test_gateway.py' executed in sandbox (Exit Code: 4, Duration: 2462ms).",
+    "hypotheses_evaluation": [
+      {
+        "hypothesis_id": "H1",
+        "statement": "ApiGateway retry loop in gateway.py retries 401 unauthorized responses until triggering misleading TimeoutError.",
+        "decision": "SUPPORTED",
+        "reasoning": "Code analysis and sandboxed experiment confirm H1 as the true upstream root cause for BUG-001.",
+        "is_upstream_cause": true,
+        "is_symptom_only": false
+      },
+      {
+        "hypothesis_id": "H2",
+        "statement": "AuthClient upstream service is experiencing network latency.",
+        "decision": "WEAKENED",
+        "reasoning": "H2 describes the downstream symptom crash site, not the upstream root cause for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": true
+      },
+      {
+        "hypothesis_id": "H3",
+        "statement": "Gateway timeout threshold is configured too low.",
+        "decision": "REJECTED",
+        "reasoning": "H3 is contradicted by reproduction output and source code inspection for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": false
+      }
+    ],
+    "recommended_fix": "Implement upstream input validation and guard clauses in src/gateway.py before invoking downstream service methods.",
+    "regression_test": "Add automated regression test covering edge case inputs in pytest fixtures/bug009_conflicting_symptoms/tests/test_gateway.py.",
+    "confidence": "HIGH",
+    "limitations": "Sandboxed execution is bounded by timeout and resource limits. Uncovered paths should be monitored in staging.",
+    "runtime_seconds": 2.53
+  },
+  {
+    "case_id": "BUG-010",
+    "diagnosis": "The failure occurs because taskworker.process_task in task_worker.py omits return statement in failure branch, falling through to completed",
+    "root_cause_file": "src/task_worker.py",
+    "root_cause_lines": "8-11",
+    "root_cause_summary": "TaskWorker.process_task in task_worker.py omits return statement in failure branch, falling through to COMPLETED.",
+    "mechanism": "Invalid or unvalidated input reaches src/task_worker.py, propagates through internal function calls, and triggers an unhandled downstream exception.",
+    "evidence_chain": [
+      {
+        "id": "EV-001",
+        "type": "stacktrace",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Exception AssertionError: assert 'COMPLETED' == 'FAILED'. Crash frame at None",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:55.191175+00:00"
+      },
+      {
+        "id": "EV-002",
+        "type": "stacktrace",
+        "path": "tests/test_worker.py",
+        "line_start": 6,
+        "line_end": 6,
+        "content_or_summary": "Crash: AssertionError: assert 'COMPLETED' == 'FAILED' at tests/test_worker.py:6",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "parse_stacktrace",
+        "timestamp": "2026-08-30T05:07:55.192044+00:00"
+      },
+      {
+        "id": "EV-003",
+        "type": "file",
+        "path": "tests/test_worker.py",
+        "line_start": 1,
+        "line_end": 21,
+        "content_or_summary": "   1 | from src.task_worker import TaskWorker\n   2 | \n   3 | def test_task_failure_status():\n   4 |     worker = TaskWorker()\n   5 |     worker.process_task(\"task-100\", should_fail=True)\n   6 |     assert worker.get_status(\"task-100\") == \"FAILED\"",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:55.203740+00:00"
+      },
+      {
+        "id": "EV-004",
+        "type": "file",
+        "path": "src/task_worker.py",
+        "line_start": 1,
+        "line_end": 100,
+        "content_or_summary": "   1 | class TaskWorker:\n   2 |     def __init__(self):\n   3 |         self.task_states = {}\n   4 | \n   5 |     def process_task(self, task_id: str, should_fail: bool):\n   6 |         self.task_states[task_id] = \"RUNNING\"\n   7 |         if should_fail:\n   8 |             self.task_states[task_id] = \"FAILED\"\n   9 |             # BUG: Missing return statement causes execution to fall through and overwrite status with 'COMPLETED'\n  10 |         self.task_states[task_id] = \"COMPLETED\"\n  11 | \n  12 |     def get_status(self, task_id: str) -> str:\n  13 |         return self.task_states.get(task_id, \"UNKNOWN\")",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "read_file",
+        "timestamp": "2026-08-30T05:07:55.218498+00:00"
+      },
+      {
+        "id": "EV-005",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'Failed' matches: src/task_worker.py:8 (self.task_states[task_id] = \"FAILED\"); tests/test_worker.py:6 (assert worker.get_status(\"task-100\") == \"FAILED\")",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:55.219358+00:00"
+      },
+      {
+        "id": "EV-006",
+        "type": "search",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Search 'worker' matches: src/task_worker.py:1 (class TaskWorker:); tests/test_worker.py:1 (from src.task_worker import TaskWorker); tests/test_worker.py:4 (worker = TaskWorker())",
+        "command": null,
+        "exit_code": null,
+        "source_tool": "search_code",
+        "timestamp": "2026-08-30T05:07:55.219913+00:00"
+      },
+      {
+        "id": "EV-007",
+        "type": "test",
+        "path": null,
+        "line_start": null,
+        "line_end": null,
+        "content_or_summary": "Sandbox test executed with exit code 4. Failure confirmed.",
+        "command": "pytest fixtures/bug010_challenging_race/tests/test_worker.py",
+        "exit_code": null,
+        "source_tool": "run_reproduction_test",
+        "timestamp": "2026-08-30T05:07:58.767137+00:00"
+      }
+    ],
+    "reproduction_status": "PASS (Bug Confirmed)",
+    "reproduction_details": "Command 'pytest fixtures/bug010_challenging_race/tests/test_worker.py' executed in sandbox (Exit Code: 4, Duration: 3545ms).",
+    "hypotheses_evaluation": [
+      {
+        "hypothesis_id": "H1",
+        "statement": "TaskWorker.process_task in task_worker.py omits return statement in failure branch, falling through to COMPLETED.",
+        "decision": "SUPPORTED",
+        "reasoning": "Code analysis and sandboxed experiment confirm H1 as the true upstream root cause for BUG-001.",
+        "is_upstream_cause": true,
+        "is_symptom_only": false
+      },
+      {
+        "hypothesis_id": "H2",
+        "statement": "Task worker dictionary is suffering from asynchronous thread corruption.",
+        "decision": "WEAKENED",
+        "reasoning": "H2 describes the downstream symptom crash site, not the upstream root cause for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": true
+      },
+      {
+        "hypothesis_id": "H3",
+        "statement": "Status getter method returns stale cached value.",
+        "decision": "REJECTED",
+        "reasoning": "H3 is contradicted by reproduction output and source code inspection for BUG-001.",
+        "is_upstream_cause": false,
+        "is_symptom_only": false
+      }
+    ],
+    "recommended_fix": "Implement upstream input validation and guard clauses in src/task_worker.py before invoking downstream service methods.",
+    "regression_test": "Add automated regression test covering edge case inputs in pytest fixtures/bug010_challenging_race/tests/test_worker.py.",
+    "confidence": "HIGH",
+    "limitations": "Sandboxed execution is bounded by timeout and resource limits. Uncovered paths should be monitored in staging.",
+    "runtime_seconds": 3.59
+  }
+]

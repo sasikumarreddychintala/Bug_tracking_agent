@@ -1,0 +1,9 @@
+{
+  "case_id": "BUG-005",
+  "repo_path": "fixtures/bug005_api_type_mismatch",
+  "commit_sha": "c005a5",
+  "bug_description": "Order lookup fails with KeyError when order ID is sent as a string from API gateway payload.",
+  "stack_trace": "Traceback (most recent call last):\n  File \"src/api_handler.py\", line 8, in handle_order_request\n    raise KeyError(f\"Order {request_payload['order_id']} not found\")\nKeyError: \"Order 101 not found\"",
+  "logs": "2026-08-29 10:19:00 ERROR [api_handler.py] KeyError looking up order '101'",
+  "reproduction_command": "pytest fixtures/bug005_api_type_mismatch/tests/test_api.py"
+}

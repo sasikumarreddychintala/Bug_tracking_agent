@@ -1,0 +1,11 @@
+case_id,category,baseline_score_0_4,repotrace_score_0_4,baseline_suspected,repotrace_root_cause,true_root_cause,symptom_trap_avoided,evidence_count,reproduction_success,repotrace_runtime_s
+BUG-001,Input Validation,1,4,src/pricing.py,src/cart.py,src/cart.py,YES,8,YES,3.16
+BUG-002,State Mutation,1,4,src/user_service.py,src/cache_manager.py,src/cache_manager.py,YES,7,YES,2.9
+BUG-003,Conditional Boundary,3,4,src/discount.py,src/discount.py,src/discount.py,YES,4,YES,3.46
+BUG-004,Exception Masking,1,4,src/user_profile.py,src/auth_service.py,src/auth_service.py,YES,6,YES,2.51
+BUG-005,API Type Mismatch,1,4,src/api_handler.py,src/order_processor.py,src/order_processor.py,YES,7,YES,2.68
+BUG-006,Ordering Issue,3,4,src/pipeline.py,src/pipeline.py,src/pipeline.py,YES,6,YES,2.34
+BUG-007,Configuration Bug,3,4,src/config_loader.py,src/config_loader.py,src/config_loader.py,YES,6,YES,2.26
+BUG-008,Data Transformation,3,4,src/csv_parser.py,src/csv_parser.py,src/csv_parser.py,YES,5,YES,2.39
+BUG-009,Conflicting Symptoms,3,4,src/gateway.py,src/gateway.py,src/gateway.py,YES,5,YES,2.53
+BUG-010,Control Flow Fallthrough,3,4,src/task_worker.py,src/task_worker.py,src/task_worker.py,YES,7,YES,3.59

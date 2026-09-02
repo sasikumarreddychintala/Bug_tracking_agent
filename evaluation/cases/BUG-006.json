@@ -1,0 +1,9 @@
+{
+  "case_id": "BUG-006",
+  "repo_path": "fixtures/bug006_ordering_deadlock",
+  "commit_sha": "c006a6",
+  "bug_description": "Pipeline execution rejects incoming compressed payloads because signature verification is executed before decompression.",
+  "stack_trace": "Traceback (most recent call last):\n  File \"src/pipeline.py\", line 11, in execute\n    raise ValueError(\"Invalid signature on compressed payload\")\nValueError: Invalid signature on compressed payload",
+  "logs": "2026-08-29 10:20:10 ERROR [pipeline.py] Invalid signature on payload",
+  "reproduction_command": "pytest fixtures/bug006_ordering_deadlock/tests/test_pipeline.py"
+}

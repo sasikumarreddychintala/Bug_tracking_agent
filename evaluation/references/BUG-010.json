@@ -1,0 +1,19 @@
+{
+  "case_id": "BUG-010",
+  "category": "Control Flow Fallthrough",
+  "root_cause": {
+    "file": "src/task_worker.py",
+    "lines": "8-11",
+    "description": "TaskWorker.process_task omits return statement inside if should_fail block, falling through to COMPLETED."
+  },
+  "mechanism": "Failure status is set to FAILED but immediately overwritten by subsequent assignment to COMPLETED.",
+  "acceptable_locations": [
+    "src/task_worker.py",
+    "task_worker.py"
+  ],
+  "regression_test": "test_task_failure_status",
+  "symptom_locations": [
+    "src/task_worker.py",
+    "task_worker.py"
+  ]
+}

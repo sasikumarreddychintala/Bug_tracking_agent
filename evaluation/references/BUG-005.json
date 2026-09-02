@@ -1,0 +1,19 @@
+{
+  "case_id": "BUG-005",
+  "category": "API Type Mismatch",
+  "root_cause": {
+    "file": "src/order_processor.py",
+    "lines": "6-8",
+    "description": "OrderProcessor.find_order performs direct dictionary lookup without type casting order_id to int."
+  },
+  "mechanism": "String key '101' does not match integer dictionary key 101, causing lookup to return None.",
+  "acceptable_locations": [
+    "src/order_processor.py",
+    "order_processor.py"
+  ],
+  "regression_test": "test_api_order_lookup",
+  "symptom_locations": [
+    "src/api_handler.py",
+    "api_handler.py"
+  ]
+}

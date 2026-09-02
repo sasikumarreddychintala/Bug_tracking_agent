@@ -1,0 +1,9 @@
+{
+  "case_id": "BUG-009",
+  "repo_path": "fixtures/bug009_conflicting_symptoms",
+  "commit_sha": "c009a9",
+  "bug_description": "API Gateway throws misleading TimeoutError when client credentials are unauthorized instead of returning 401.",
+  "stack_trace": "Traceback (most recent call last):\n  File \"src/gateway.py\", line 15, in forward_request\n    raise TimeoutError(\"Gateway timeout waiting for upstream service\")\nTimeoutError: Gateway timeout waiting for upstream service",
+  "logs": "2026-08-29 10:23:45 ERROR [gateway.py] TimeoutError after retry loop",
+  "reproduction_command": "pytest fixtures/bug009_conflicting_symptoms/tests/test_gateway.py"
+}

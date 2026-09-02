@@ -1,0 +1,9 @@
+{
+  "case_id": "BUG-004",
+  "repo_path": "fixtures/bug004_exception_masking",
+  "commit_sha": "c004a4",
+  "bug_description": "User profile retrieval crashes with AttributeError when token expires because auth_service swallows the exception and returns None.",
+  "stack_trace": "Traceback (most recent call last):\n  File \"src/user_profile.py\", line 6, in get_user_role\n    return auth_data.get(\"role\", \"unknown\")\nAttributeError: 'NoneType' object has no attribute 'get'",
+  "logs": "2026-08-29 10:17:45 ERROR [user_profile.py] AttributeError on user profile lookup",
+  "reproduction_command": "pytest fixtures/bug004_exception_masking/tests/test_profile.py"
+}

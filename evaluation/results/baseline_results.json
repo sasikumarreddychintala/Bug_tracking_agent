@@ -1,0 +1,92 @@
+[
+  {
+    "case_id": "BUG-001",
+    "suspected_file": "src/pricing.py",
+    "suspected_line": 4,
+    "diagnosis": "ZeroDivisionError in calculate_unit_price formula.",
+    "confidence": 0.45,
+    "runtime_seconds": 0.009,
+    "method": "Baseline V0 (Single-shot LLM)"
+  },
+  {
+    "case_id": "BUG-002",
+    "suspected_file": "src/user_service.py",
+    "suspected_line": 11,
+    "diagnosis": "AssertionError in user role assignment check.",
+    "confidence": 0.45,
+    "runtime_seconds": 0.0,
+    "method": "Baseline V0 (Single-shot LLM)"
+  },
+  {
+    "case_id": "BUG-003",
+    "suspected_file": "src/discount.py",
+    "suspected_line": 4,
+    "diagnosis": "Discount calculation returns 0 for tier 0.",
+    "confidence": 0.45,
+    "runtime_seconds": 0.0,
+    "method": "Baseline V0 (Single-shot LLM)"
+  },
+  {
+    "case_id": "BUG-004",
+    "suspected_file": "src/user_profile.py",
+    "suspected_line": 6,
+    "diagnosis": "AttributeError on auth_data object in user_profile.",
+    "confidence": 0.45,
+    "runtime_seconds": 0.0,
+    "method": "Baseline V0 (Single-shot LLM)"
+  },
+  {
+    "case_id": "BUG-005",
+    "suspected_file": "src/api_handler.py",
+    "suspected_line": 8,
+    "diagnosis": "KeyError thrown during order lookup handler.",
+    "confidence": 0.45,
+    "runtime_seconds": 0.0,
+    "method": "Baseline V0 (Single-shot LLM)"
+  },
+  {
+    "case_id": "BUG-006",
+    "suspected_file": "src/pipeline.py",
+    "suspected_line": 11,
+    "diagnosis": "ValueError signature check fails on payload body.",
+    "confidence": 0.45,
+    "runtime_seconds": 0.0,
+    "method": "Baseline V0 (Single-shot LLM)"
+  },
+  {
+    "case_id": "BUG-007",
+    "suspected_file": "src/config_loader.py",
+    "suspected_line": 7,
+    "diagnosis": "Server port assertion mismatch.",
+    "confidence": 0.45,
+    "runtime_seconds": 0.0,
+    "method": "Baseline V0 (Single-shot LLM)"
+  },
+  {
+    "case_id": "BUG-008",
+    "suspected_file": "src/csv_parser.py",
+    "suspected_line": 4,
+    "diagnosis": "UnicodeDecodeError reading raw CSV bytes.",
+    "confidence": 0.45,
+    "runtime_seconds": 0.0,
+    "method": "Baseline V0 (Single-shot LLM)"
+  },
+  {
+    "case_id": "BUG-009",
+    "suspected_file": "src/gateway.py",
+    "suspected_line": 15,
+    "diagnosis": "TimeoutError in gateway retry loop.",
+    "confidence": 0.45,
+    "runtime_seconds": 0.0,
+    "method": "Baseline V0 (Single-shot LLM)"
+  },
+  {
+    "case_id": "BUG-010",
+    "suspected_file": "src/task_worker.py",
+    "suspected_line": 10,
+    "diagnosis": "Task status assertion mismatch.",
+    "confidence": 0.45,
+    "runtime_seconds": 0.0,
+    "method": "Baseline V0 (Single-shot LLM)"
+  }
+]

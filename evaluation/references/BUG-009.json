@@ -1,0 +1,19 @@
+{
+  "case_id": "BUG-009",
+  "category": "Conflicting Symptoms",
+  "root_cause": {
+    "file": "src/gateway.py",
+    "lines": "11-16",
+    "description": "ApiGateway retry loop retries on authentication failure rather than rejecting unauthorized credentials immediately."
+  },
+  "mechanism": "Empty auth token causes retry loop to exhaust attempts and raise TimeoutError, masking underlying 401 unauthorized status.",
+  "acceptable_locations": [
+    "src/gateway.py",
+    "gateway.py"
+  ],
+  "regression_test": "test_invalid_auth_handling",
+  "symptom_locations": [
+    "src/gateway.py",
+    "gateway.py"
+  ]
+}

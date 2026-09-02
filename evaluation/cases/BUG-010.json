@@ -1,0 +1,9 @@
+{
+  "case_id": "BUG-010",
+  "repo_path": "fixtures/bug010_challenging_race",
+  "commit_sha": "c010a10",
+  "bug_description": "Failed worker tasks are erroneously marked as COMPLETED due to missing return guard in failure handling branch.",
+  "stack_trace": "Traceback (most recent call last):\n  File \"tests/test_worker.py\", line 6, in test_task_failure_status\n    assert worker.get_status(\"task-100\") == \"FAILED\"\nAssertionError: assert 'COMPLETED' == 'FAILED'",
+  "logs": "2026-08-29 10:25:00 WARN [task_worker.py] Task 'task-100' transitioned FAILED -> COMPLETED",
+  "reproduction_command": "pytest fixtures/bug010_challenging_race/tests/test_worker.py"
+}

@@ -1,0 +1,9 @@
+{
+  "case_id": "BUG-003",
+  "repo_path": "fixtures/bug003_conditional_boundary",
+  "commit_sha": "c003a3",
+  "bug_description": "Discount calculation evaluates boundary comparison incorrectly for baseline loyalty tiers.",
+  "stack_trace": "None (Logical assertion failure in discount calculation)",
+  "logs": "2026-08-29 10:16:12 INFO [discount.py] Processed discount for tier 0",
+  "reproduction_command": "pytest fixtures/bug003_conditional_boundary/tests/test_order.py"
+}

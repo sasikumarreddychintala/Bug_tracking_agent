@@ -1,0 +1,9 @@
+{
+  "case_id": "BUG-002",
+  "repo_path": "fixtures/bug002_state_mutation",
+  "commit_sha": "c002a2",
+  "bug_description": "Regular users created after an admin user inherit admin privileges due to in-place mutation of shared cache.",
+  "stack_trace": "Traceback (most recent call last):\n  File \"tests/test_cache.py\", line 11, in test_cache_mutation\n    assert \"admin\" not in regular[\"roles\"]\nAssertionError: assert 'admin' not in ['guest', 'viewer', 'admin']",
+  "logs": "2026-08-29 10:15:30 WARN [user_service.py] User 'bob' assigned unintended roles: ['guest', 'viewer', 'admin']",
+  "reproduction_command": "pytest fixtures/bug002_state_mutation/tests/test_cache.py"
+}

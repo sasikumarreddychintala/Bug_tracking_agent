@@ -1,0 +1,19 @@
+{
+  "case_id": "BUG-004",
+  "category": "Exception Masking",
+  "root_cause": {
+    "file": "src/auth_service.py",
+    "lines": "7-9",
+    "description": "auth_service.verify_token catches broad Exception and returns None, masking authentication errors and causing downstream NoneType crashes."
+  },
+  "mechanism": "Swallowed exception produces None return value which is dereferenced in user_profile.py.",
+  "acceptable_locations": [
+    "src/auth_service.py",
+    "auth_service.py"
+  ],
+  "regression_test": "test_expired_token",
+  "symptom_locations": [
+    "src/user_profile.py",
+    "user_profile.py"
+  ]
+}

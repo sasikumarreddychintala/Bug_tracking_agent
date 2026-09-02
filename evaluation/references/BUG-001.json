@@ -1,0 +1,19 @@
+{
+  "case_id": "BUG-001",
+  "category": "Input Validation",
+  "root_cause": {
+    "file": "src/cart.py",
+    "lines": "8-12",
+    "description": "ShoppingCart.add_item does not validate that quantity > 0 before calling calculate_unit_price, passing invalid zero value downstream."
+  },
+  "mechanism": "Zero quantity is accepted by cart.py and forwarded to pricing.py, which performs division by quantity, raising ZeroDivisionError.",
+  "acceptable_locations": [
+    "src/cart.py",
+    "cart.py"
+  ],
+  "regression_test": "test_add_zero_quantity_should_raise_or_prevent",
+  "symptom_locations": [
+    "src/pricing.py",
+    "pricing.py"
+  ]
+}
